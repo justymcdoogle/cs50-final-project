@@ -1,0 +1,20 @@
+{% extends "layout.html" %}
+
+
+{% block title %}
+    {{ song.name }}
+{% endblock %}
+
+
+{% block main %}
+    <h1>
+        {{ song.name }} by
+    </h1>
+    <h3>
+        {{ song.artist }}
+    </h3>
+<pre class="tab-content">{{ song.content }}</pre>
+    <footer>
+        <a href="/search">Back to search</a>
+    </footer>
+{% endblock %}

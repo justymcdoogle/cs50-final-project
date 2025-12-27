@@ -1,0 +1,28 @@
+/* Most of not all of the css will be generated because
+ * I'm just not good at css and i dont wanna use my brain
+ * right now lool
+ *
+ * This first part is thanks to Gemini (I ran out of
+ * Claude credits)
+
+
+/* This targets the <pre> tag where your tabs live */
+.tab-content {
+    background-color: #f8f9fa; /* Light grey background */
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+    
+    /* THE IMPORTANT PARTS: */
+    font-family: 'Courier New', Courier, monospace; /* Keeps characters aligned */
+    overflow-x: auto;      /* If the line is too long, it adds a scrollbar ONLY to the box */
+    white-space: pre;      /* Keeps your spaces and line breaks exactly as typed */
+    line-height: 1.5;      /* Gives the chords and lyrics some breathing room */
+    color: #333;
+}
+
+/* Optional: Make the chords a different color so they pop */
+.chord-highlight {
+    color: #007bff; /* Nice blue color */
+    font-weight: bold;
+}

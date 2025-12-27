@@ -1,0 +1,36 @@
+{% extends "layout.html" %}
+
+
+{% block title %}
+    Search
+{% endblock %}
+
+
+{% block main %}
+    <search>
+        <form action="/search" method="get">
+            <label for="tab">Find a tab</label>
+            <input type="search" id="tab" name="q" placeholder="Search for a song...">
+            <button type="submit">Search</button>
+        </form>
+        
+        <section>
+            {% if songs %}
+            <h3>Results:</h3>
+
+            <ul id="results">
+                {% for song in songs %}
+                <li><a href="/song/{{ song.id }}">{{ song.name }}
+                    by {{ song.artist }}</a></li>
+                {% endfor %}
+            </ul>
+
+            {% else %}
+            <output id="no-results">
+                No results...
+            </output>
+            {% endif %}
+        </section>
+    </search>
+{% endblock %}
+

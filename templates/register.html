@@ -1,0 +1,26 @@
+{% extends "layout.html" %}
+
+
+{% block title %}
+    Registration
+{% endblock %}
+
+
+{% block main %}
+    <caption>Register here:</caption>
+    <form action="/register" method="post">
+        <div>
+            <input autocomplete="off" name="username" type="text" required placeholder="Username">
+        </div>
+        <div>
+            <input autocomplete="off" name="password" type="password" required placeholder="Password">
+        </div>
+        <div>
+            <input autocomplete="off" name="confirmation" type="password" required placeholder="Confirm password">
+        </div>
+        <button class="btn btn-primary" type="submit">Register</button>
+    </form>
+
+    <p>Already have an account? Login <a href="/login">here</a>!</p>
+{% endblock %}
+

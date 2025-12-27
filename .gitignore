@@ -1,2 +1,17 @@
+# I definitely had Claude give me advice about
+# what needs to be in a .gitignore heh heh
+
 # Python
 venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# I don't have a mac but...
+.DS_Store
+
+# Flask
+flask_session/
+
+# Logs
+*.log
