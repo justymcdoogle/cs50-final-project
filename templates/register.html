@@ -7,20 +7,22 @@
 
 
 {% block main %}
-    <caption>Register here:</caption>
-    <form action="/register" method="post">
-        <div>
-            <input autocomplete="off" name="username" type="text" required placeholder="Username">
-        </div>
-        <div>
-            <input autocomplete="off" name="password" type="password" required placeholder="Password">
-        </div>
-        <div>
-            <input autocomplete="off" name="confirmation" type="password" required placeholder="Confirm password">
-        </div>
-        <button class="btn btn-primary" type="submit">Register</button>
-    </form>
+    <div class="mx-auto" style="max-width: 400px;">
+        <h2 class="mb-4">Register here:</h2>
+        <form action="/register" method="post">
+            <div class="mb-3">
+                <input autocomplete="off" autofocus class="form-control" name="username" type="text" required placeholder="Username">
+            </div>
+            <div class="mb-3">
+                <input autocomplete="off" class="form-control" name="password" type="password" required placeholder="Password">
+            </div>
+            <div class="mb-3">
+                <input autocomplete="off" class="form-control" name="confirmation" type="password" required placeholder="Confirm password">
+            </div>
+            <button class="btn btn-primary w-100" type="submit">Register</button>
+        </form>
 
-    <p>Already have an account? Login <a href="/login">here</a>!</p>
+        <p class="mt-3">Already have an account? Login <a href="/login">here</a>!</p>
+    </div>
 {% endblock %}
 

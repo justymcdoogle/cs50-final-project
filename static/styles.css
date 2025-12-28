@@ -12,6 +12,7 @@
     padding: 20px;
     border-radius: 8px;
     border: 1px solid #dee2e6;
+    text-align: left;
     
     /* THE IMPORTANT PARTS: */
     font-family: 'Courier New', Courier, monospace; /* Keeps characters aligned */
@@ -21,8 +22,19 @@
     color: #333;
 }
 
+input.tab-content {
+    height: 20px;
+    width: 765px;
+    max-width: 100%;
+}
+
 /* Optional: Make the chords a different color so they pop */
 .chord-highlight {
     color: #007bff; /* Nice blue color */
     font-weight: bold;
+}
+
+.btn-favorite {
+    height: 50px;
+    width: 100px;
 }

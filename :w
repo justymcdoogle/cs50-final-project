@@ -3,7 +3,9 @@ from flask_session import Session
 from werkzeug.security import check_password_hash, generate_password_hash
 from cs50 import SQL
 
-from helpers import login_required, validate_parsed_data 
+from helpers import login_required 
+
+VALID_SECTIONS = ["verse", "chorus", "bridge", "intro", "outro"]
 
 # Configure application
 app = Flask(__name__)
@@ -22,17 +24,14 @@ def register():
 
     if request.method == "POST":
         if not request.form.get("username"):
-            flash("No username :(")
-            return redirect("/register")
+            return "No username :("
 
         password = request.form.get("password")
         if not password:
-            flash("No password :(")
-            return redirect("/register")
+            return "No password :("
 
         if not request.form.get("confirmation"):
-            flash("No confirmation :(")
-            return redirect("/register")
+            return "No confirmation :("
         
         rows = db.execute(
             "SELECT username FROM users WHERE username = ?",
@@ -40,14 +39,12 @@ def register():
         )
 
         if len(rows) > 0:
-            flash("Username not unique :(")
-            return redirect("/register")
+            return "Username not unique :("
         
         if request.form.get("password") != request.form.get("confirmation"):
-            flash("Confirmation must match password :(")
-            return redirect("/register")
+            return "Confirmation must match password :("
 
-        hashed_password = generate_password_hash(password) # type: ignore
+        hashed_password = generate_password_hash(password)
 
         db.execute(
             "INSERT INTO users (username, hash) VALUES (?, ?)",
@@ -74,21 +71,18 @@ def login():
 
     if request.method == "POST":
         if not request.form.get("username"):
-            flash("Must provide username. Nice try")
-            return redirect("/login")
+            return "Must provide username. L"
         
         password = request.form.get("password")
         if not password:
-            flash("Must provide password. Nice try")
-            return redirect("/login")
+            return "Must provide password. L"
 
         rows = db.execute(
         "SELECT * FROM users WHERE username = ?", request.form.get("username"))
 
 
-        if len(rows) != 1 or not check_password_hash(rows[0]["hash"], password): # type: ignore
-            flash("Username taken or password wrong")
-            return redirect("/login")
+        if len(rows) != 1 or not check_password_hash(rows[0]["hash"], password):
+            return "invalid user/password. Lol"
 
         session["user_id"] = rows[0]["id"]
 
@@ -105,19 +99,11 @@ def logout():
 
     return redirect("/")
 
-
 @app.route("/")
 @login_required
 def index():
     """Homepage"""
-    recent = db.execute(
-        "SELECT tabs.*, users.username FROM tabs \
-        JOIN users ON tabs.user_id = users.id \
-        ORDER BY tabs.id DESC LIMIT 10"
-    )
-
-    return render_template("index.html", recent=recent)
-
+    return render_template("index.html")
 
 @app.route("/search")
 @login_required
@@ -146,6 +132,7 @@ def create():
     """Create a new tab"""
     TITLE_LENGTH = 200
     ARTIST_LENGTH = 150
+    LINE_LENGTH = 75
     if request.method == "POST":
         name = request.form.get("name")
         name = name.rstrip() # type: ignore
@@ -154,19 +141,14 @@ def create():
         #print(name, artist)
 
         if not name:
-            flash("Invalid name length")
-            return redirect("/create")
+            return "error, must have name", 403
         if len(name) > TITLE_LENGTH:
-            flash("Invalid title length")
-            return redirect("/create")
+            return "Invalid title length", 400
 
         if not artist:
-            flash("error, must have artist")
-            return redirect("/create")
+            return "error, must have artist", 403
         if len(artist) > ARTIST_LENGTH:
-            flash("Invalid artist length")
-            return redirect("/create")
-
+            return "Invalid artist length", 400
         parsed_data = {}
         content = ""
         
@@ -187,6 +169,8 @@ def create():
                     parsed_data[section_number] = {'type': '', 'line': {}}
                 
                 if input_type == 'type':
+                    if parsed_data[section_number]['type'] not in VALID_SECTIONS:
+                        return "Invalid section type", 400
                     parsed_data[section_number]['type'] = value
                 
                 elif input_type == 'chords' or input_type == 'lyrics':
@@ -199,22 +183,13 @@ def create():
                         parsed_data[section_number]['line'][line_number]['lyrics'] = value
         
 
-        error = validate_parsed_data(parsed_data)
-        if error:
-            flash(error)
-            return redirect("/create")
-
-        verse_counter = 0
+        validate_parsed_data(parsed_data)
 
         #print(f'parsed data: {parsed_data}') 
         for section_number in sorted(parsed_data.keys()):
             #print(section_number, sorted(parsed_data.keys()))
             section = parsed_data[section_number]
-            if section['type'] == 'verse':
-                verse_counter += 1
-                content += f"[{section['type'].capitalize()} {verse_counter}]\n"
-            else:
-                content += f"[{section['type'].capitalize()}]\n"
+            content += f"[{section['type'].capitalize()}]\n"
 
             for line_number in sorted(section['line'].keys()):
                 #print(section_number, line_number)
@@ -244,6 +219,15 @@ def create():
     else:
         return render_template("create_tab.html")
 
+@app.route("/favorite")
+@login_required
+def favorite():
+    if request.method == "POST":
+        return "nothing for now..."
+
+    else:
+        return render_template("favorites.html")
+
 
 # Definitely needed Gemini to explain how this works 😅
 @app.route("/song/<int:song_id>")
@@ -251,57 +235,14 @@ def create():
 def songs(song_id):
     """Display song"""
     song = db.execute(
-        "SELECT tabs.*, users.username FROM tabs \
-        JOIN users ON tabs.user_id = users.id \
-        WHERE tabs.id = ?",
+        "SELECT * FROM tabs WHERE id = ?",
         song_id,
     )
 
     if not song:
-        flash("Song not found")
-        return redirect("/search")
+        return "Song not found", 404
 
     return render_template("song.html", song=song[0])
-
-
-@app.route("/favorite")
-@login_required
-def favorite():
-    """Display favorites"""
-    favorites = db.execute(
-        "SELECT tabs.* FROM tabs \
-        JOIN favorites ON tabs.id = favorites.tab_id \
-        WHERE favorites.user_id = ?", session["user_id"]
-    )
-    
-
-    return render_template("favorites.html", favorites=favorites)
-
-
-@app.route("/favorite/add/<int:song_id>", methods=["POST"])
-@login_required
-def add_favorite(song_id):
-    """Add a song to user's list of favorites"""
-    
-    rows = db.execute(
-        "SELECT * FROM favorites WHERE user_id = ? AND tab_id = ?",
-        session["user_id"], song_id
-    )
-    
-    if len(rows) == 1:
-        db.execute("DELETE FROM favorites WHERE user_id = ? AND tab_id = ?",
-            session["user_id"], song_id
-        )
-
-    else:
-        db.execute(
-            "INSERT INTO favorites (user_id, tab_id) \
-            VALUES (?, ?)",
-            session["user_id"], song_id
-        )
-    
-
-    return redirect(f"/song/{song_id}")
 
 if __name__ == "__main__":
     app.run(debug=True)

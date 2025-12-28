@@ -7,6 +7,23 @@
 
 
 {% block main %}
-    <p>Display favorites</p>
+    <div class="mx-auto" style="max-width: 600px;">
+        <h2 class="mb-4">Your favorites</h2>
+        {% if favorites %}
+            <div class="list-group">
+            {% for song in favorites %}
+                <div>
+                    <a href="/song/{{ song.id }}" class="list-group-item list-group-item-action">
+                        <strong>{{ song.name }}</strong> by {{ song.artist }}
+                    </a>
+                </div>
+            {% endfor %}
+            </div>
+        {% else %}
+        <div class="alert alert-info text-center">
+            No favorites yet. <a href="/search" class="alert-link">Search</a> to find songs, or <a href="/create" class="alert-link">create</a> your own!
+        </div>
+        {% endif %}
+    </div>
 {% endblock %}
 

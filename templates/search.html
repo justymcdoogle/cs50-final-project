@@ -7,30 +7,32 @@
 
 
 {% block main %}
-    <search>
-        <form action="/search" method="get">
-            <label for="tab">Find a tab</label>
-            <input type="search" id="tab" name="q" placeholder="Search for a song...">
-            <button type="submit">Search</button>
+    <div class="mx-auto" style="max-width: 600px;">
+        <h2 class="mb-4">Find a tab</h2>
+        <form action="/search" method="get" class="mb-4">
+            <div class="input-group">
+                <input autofocus type="search" id="tab" name="q" placeholder="Search for a song..." class="form-control">
+                <button type="submit" class="btn btn-primary">Search</button>
+            </div>
         </form>
         
         <section>
             {% if songs %}
-            <h3>Results:</h3>
-
-            <ul id="results">
+            <h3 class="mb-3">Results:</h3>
+            <div class="list-group">
                 {% for song in songs %}
-                <li><a href="/song/{{ song.id }}">{{ song.name }}
-                    by {{ song.artist }}</a></li>
+                <a href="/song/{{ song.id }}" class="list-group-item list-group-item-action">
+                    <strong>{{ song.name }}</strong> by {{ song.artist }}
+                </a>
                 {% endfor %}
-            </ul>
+            </div>
 
             {% else %}
-            <output id="no-results">
+            <div class="alert alert-info text-center">
                 No results...
-            </output>
+            </div>
             {% endif %}
         </section>
-    </search>
+    </div>
 {% endblock %}
 

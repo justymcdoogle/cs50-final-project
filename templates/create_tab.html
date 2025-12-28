@@ -7,10 +7,195 @@
 
 
 {% block main %}
-    <p>Somehow make a tab here lol</p>
-    <div>
-        <textarea name="textbox-create-tab" rows="5" cols="60">
-        </textarea>
-    </div>
+    <button type="button" id="btn-start" class="btn btn-success btn-lg">Start making song</button>
+
+    <!-- If button clicked -->
+    <form action="/create" method="post" class="mx-auto" style="max-width: 800px">
+        <div class="mb-3">
+            <input autocomplete="off" type="text" name="name" required placeholder="Song title" maxlength=200>
+        </div>
+        <div class="mb-3">
+            <input autocomplete="off" type="text" name="artist" required placeholder="Artist/Band" maxlength=150>
+        </div>
+        
+        <!-- Start lines -->
+        <div class="section border p-3 mb-3" data-section-index="0">
+            <div class="mb-3">
+                <select name="section_0_type" class="form-select">
+                    <option value="" disabled selected>--Please choose a type--</option>
+                    <option value="verse">Verse</option>
+                    <option value="chorus">Chorus</option>
+                    <option value="bridge">Bridge</option>
+                    <option value="intro">Intro</option>
+                    <option value="outro">Outro</option>
+                </select>
+            </div>
+            <div class="mb-2">
+                <input autocomplete="off" class="tab-content form-control" type="text" name="section_0_chords_0" required placeholder="Chords" maxlength="75">
+            </div>
+            <div class="mb-2">
+                <input autocomplete="off" class="tab-content form-control" type="text" name="section_0_lyrics_0" placeholder="Lyrics" maxLength="75">
+            </div>
+            <div>
+                <button type="button" class="btn btn-secondary btn-sm btn-add-line">Add new line</button>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <button type="button" id="btn-add-section" class="btn btn-secondary">Add new section</button>
+        </div>
+        <button type="submit" class="btn btn-primary btn-lg">Submit song</button>
+    </form>
+    
+    <script>
+
+        // Definitely used Claude for most of this lol
+        // although I have edited it, so I do *kind of*
+        // have an okay understanding of each piece, but
+        // definitely would've been very difficult for me
+        // to figure this out without AI 
+
+        const startButton = document.querySelector('#btn-start');
+        const form = document.querySelector('form');
+
+        form.style.display = 'none';
+
+        startButton.addEventListener('click', function() {
+            form.style.display = 'block';
+            startButton.style.display = 'none';
+        })
+
+        let lineCounts = [1];
+        let sectionCount = 1;
+
+
+        //// Add new line ////
+        form.addEventListener('click', function(e) {
+            if (e.target.classList.contains('btn-add-line')) {
+                const section = e.target.closest('.section');
+                const sectionIndex = parseInt(section.dataset.sectionIndex);
+                const lineIndex = lineCounts[sectionIndex];
+
+                const chordDiv = document.createElement('div');
+                const chordInput = document.createElement('input');
+                chordInput.type = 'text';
+                chordInput.name = `section_${sectionIndex}_chords_${lineIndex}`;
+                chordInput.placeholder = 'Chords';
+                chordInput.className = 'form-control tab-content';
+                chordInput.required = true;
+                chordInput.maxLength = 75;
+                chordInput.autocomplete = 'off';
+                chordDiv.appendChild(chordInput);
+                
+                const lyricDiv = document.createElement('div');
+                const lyricInput = document.createElement('input');
+                lyricInput.type = 'text';
+                lyricInput.name = `section_${sectionIndex}_lyrics_${lineIndex}`;
+                lyricInput.placeholder = 'Lyrics';
+                lyricInput.className = 'form-control tab-content';
+                lyricInput.maxLength = 75;
+                lyricInput.autocomplete = 'off';
+                lyricDiv.appendChild(lyricInput);
+
+                const deleteLineBtn = document.createElement('button');
+                deleteLineBtn.type = 'button';
+                deleteLineBtn.textContent = 'Delete line';
+                deleteLineBtn.className = 'btn btn-danger btn-sm btn-delete-line';
+
+                const lineContainer = document.createElement('div');
+                lineContainer.className = 'line-container mb-2';
+                lineContainer.appendChild(chordDiv);
+                lineContainer.appendChild(lyricDiv);
+                lineContainer.appendChild(deleteLineBtn);
+
+                const buttonDiv = e.target.parentElement;
+                buttonDiv.parentElement.insertBefore(lineContainer, buttonDiv);
+
+                lineCounts[sectionIndex]++;
+            }
+
+
+            //// Add new section ////
+            if (e.target.id === 'btn-add-section') {
+
+                console.log('Add section clicked!');
+
+                const newSection = document.createElement('div');
+                newSection.className = 'section border p-3 mb-3';
+                newSection.dataset.sectionIndex = sectionCount;
+
+                const selectDiv = document.createElement('div');
+                const select = document.createElement('select');
+                select.name = `section_${sectionCount}_type`;
+                select.className = 'form-select';
+                select.innerHTML = `
+                    <option value="" disabled selected>--Please choose a type--</option>
+                    <option value="verse">Verse</option>
+                    <option value="chorus">Chorus</option>
+                    <option value="bridge">Bridge</option>
+                    <option value="intro">Intro</option>
+                    <option value="outro">Outro</option>
+                `;
+                selectDiv.appendChild(select);
+                newSection.appendChild(selectDiv);
+
+                const chordDiv = document.createElement('div');
+                const chordInput = document.createElement('input');
+                chordInput.type = 'text';
+                chordInput.name = `section_${sectionCount}_chords_0`;
+                chordInput.placeholder = 'Chords';
+                chordInput.className = 'form-control tab-content';
+                chordInput.required = true;
+                chordInput.maxLength = 75;
+                chordInput.autocomplete = 'off';
+                chordDiv.appendChild(chordInput);
+                newSection.appendChild(chordDiv);
+                
+                const lyricDiv = document.createElement('div');
+                const lyricInput = document.createElement('input');
+                lyricInput.type = 'text';
+                lyricInput.name = `section_${sectionCount}_lyrics_0`;
+                lyricInput.placeholder = 'Lyrics';
+                lyricInput.className = 'form-control tab-content';
+                lyricInput.maxLength = 75;
+                lyricInput.autocomplete = 'off';
+                lyricDiv.appendChild(lyricInput);
+                newSection.appendChild(lyricDiv);
+
+                const addLineDiv = document.createElement('div');
+                const addLineBtn = document.createElement('button');
+                addLineBtn.type = 'button';
+                addLineBtn.className = 'btn btn-secondary btn-sm btn-add-line';
+                addLineBtn.textContent = 'Add new line';
+                addLineDiv.appendChild(addLineBtn);
+                newSection.appendChild(addLineDiv);
+
+                const deleteSectionDiv = document.createElement('div');
+                const deleteSectionBtn = document.createElement('button');
+                deleteSectionBtn.type = 'button';
+                deleteSectionBtn.className = 'btn btn-danger btn-sm btn-delete-section';
+                deleteSectionBtn.textContent = 'Delete section';
+                deleteSectionDiv.appendChild(deleteSectionBtn);
+                newSection.appendChild(deleteSectionDiv);
+
+                e.target.parentElement.before(newSection);
+
+                lineCounts[sectionCount] = 1;
+                sectionCount++;
+            }
+
+            if (e.target.classList.contains('btn-delete-line')) {
+                const lineContainer = e.target.closest('.line-container');
+                lineContainer.remove();
+            }
+
+            if (e.target.classList.contains('btn-delete-section')) {
+                const section = e.target.closest('.section');
+                section.remove();
+            }
+        });
+
+    </script>
+
 {% endblock %}
 
