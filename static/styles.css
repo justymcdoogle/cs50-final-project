@@ -38,3 +38,58 @@ input.tab-content {
     height: 50px;
     width: 100px;
 }
+
+.line-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 0.5rem;
+    position: relative;
+}
+
+.line-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.line-inputs {
+    flex-grow: 1;
+    width: 100%;
+}
+
+.line-inputs > div {
+    margin-bottom: 0.5rem;
+}
+
+.line-container > div {
+    flex: 1;
+    min-width: 0;
+}
+
+.btn-delete-line {
+    position: absolute;
+    left: -120px;
+    flex-shrink: 0;
+}
+
+.section {
+    position: relative;
+}
+
+.section > div:first-child {
+    padding-right: 150px;
+}
+
+.section select {
+    width: 200px;
+    margin-left: 284px;
+    text-align: center;
+}
+
+.btn-delete-section {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    z-index: 10;
+}

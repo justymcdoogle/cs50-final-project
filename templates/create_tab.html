@@ -22,7 +22,7 @@
         <div class="section border p-3 mb-3" data-section-index="0">
             <div class="mb-3">
                 <select name="section_0_type" class="form-select">
-                    <option value="" disabled selected>--Please choose a type--</option>
+                    <option value="" disabled selected>--Choose a type--</option>
                     <option value="verse">Verse</option>
                     <option value="chorus">Chorus</option>
                     <option value="bridge">Bridge</option>
@@ -103,13 +103,17 @@
                 deleteLineBtn.className = 'btn btn-danger btn-sm btn-delete-line';
 
                 const lineContainer = document.createElement('div');
-                lineContainer.className = 'line-container mb-2';
+                lineContainer.className = 'line-inputs';
                 lineContainer.appendChild(chordDiv);
                 lineContainer.appendChild(lyricDiv);
-                lineContainer.appendChild(deleteLineBtn);
+
+                const lineWrapper = document.createElement('div');
+                lineWrapper.className = 'line-wrapper mb-2';
+                lineWrapper.appendChild(deleteLineBtn);
+                lineWrapper.appendChild(lineContainer);
 
                 const buttonDiv = e.target.parentElement;
-                buttonDiv.parentElement.insertBefore(lineContainer, buttonDiv);
+                buttonDiv.parentElement.insertBefore(lineWrapper, buttonDiv);
 
                 lineCounts[sectionIndex]++;
             }
@@ -129,7 +133,7 @@
                 select.name = `section_${sectionCount}_type`;
                 select.className = 'form-select';
                 select.innerHTML = `
-                    <option value="" disabled selected>--Please choose a type--</option>
+                    <option value="" disabled selected>--Choose a type--</option>
                     <option value="verse">Verse</option>
                     <option value="chorus">Chorus</option>
                     <option value="bridge">Bridge</option>
@@ -185,7 +189,7 @@
             }
 
             if (e.target.classList.contains('btn-delete-line')) {
-                const lineContainer = e.target.closest('.line-container');
+                const lineContainer = e.target.closest('.line-wrapper');
                 lineContainer.remove();
             }
 

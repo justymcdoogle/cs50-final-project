@@ -26,5 +26,8 @@ def validate_parsed_data(parsed_data):
                 return "Chord line too long"
             if len(line['lyrics']) > LINE_LENGTH:
                 return "Lyrics line too long"
-            
+
+def apology(message):
+    """Show an error message"""
+
 
