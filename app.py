@@ -51,8 +51,7 @@ def register():
 
         db.execute(
             "INSERT INTO users (username, hash) VALUES (?, ?)",
-            request.form.get("username"),
-            hashed_password,
+            request.form.get("username"), hashed_password
         )
 
         rows = db.execute(
@@ -83,7 +82,9 @@ def login():
             return redirect("/login")
 
         rows = db.execute(
-        "SELECT * FROM users WHERE username = ?", request.form.get("username"))
+            "SELECT * FROM users WHERE username = ?",
+            request.form.get("username")
+        )
 
 
         if len(rows) != 1 or not check_password_hash(rows[0]["hash"], password): # type: ignore
@@ -144,6 +145,7 @@ def search():
 @login_required
 def create():
     """Create a new tab"""
+    # Probably could've used a helper function or two here but oh well
     TITLE_LENGTH = 200
     ARTIST_LENGTH = 150
     if request.method == "POST":
@@ -261,7 +263,15 @@ def songs(song_id):
         flash("Song not found")
         return redirect("/search")
 
-    return render_template("song.html", song=song[0])
+    favorited = db.execute(
+        "SELECT * FROM favorites WHERE \
+        user_id = ? and tab_id = ?",
+        session["user_id"], song_id
+    )
+
+    is_favorited = len(favorited) > 0
+
+    return render_template("song.html", song=song[0], is_favorited=is_favorited)
 
 
 @app.route("/favorite")

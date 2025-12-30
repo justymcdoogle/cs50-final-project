@@ -13,7 +13,7 @@ def login_required(f):
 def validate_parsed_data(parsed_data):
     """Make sure data is what we want before it goes into the database"""
     LINE_LENGTH = 75
-    VALID_SECTIONS = ["verse", "chorus", "bridge", "intro", "outro"]
+    VALID_SECTIONS = ["verse", "chorus", "bridge", "intro", "outro", "solo"]
     for section_number in parsed_data:
         section_type = parsed_data[section_number]['type'].lower()
         if section_type not in VALID_SECTIONS:
@@ -26,8 +26,4 @@ def validate_parsed_data(parsed_data):
                 return "Chord line too long"
             if len(line['lyrics']) > LINE_LENGTH:
                 return "Lyrics line too long"
-
-def apology(message):
-    """Show an error message"""
-
 
